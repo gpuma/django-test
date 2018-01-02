@@ -1,0 +1,6 @@
+pip install ntlk
+import ntlk
+nltk.download("stopwords")
+#required for tokenization
+nltk.download('punkt')
+
