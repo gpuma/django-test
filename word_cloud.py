@@ -45,13 +45,22 @@ def get_word_freq(word_list, normalize=True):
 
 
 def create_word_cloud(word_list, width, height, font_size, background, foreground, xy):
+    word = "benis"
     img = Image.new("RGB", (width, height), ImageColor.getrgb(background))
     fnt = ImageFont.truetype(font_location, font_size)
     draw = ImageDraw.Draw(img)
-    draw.text(xy, "palabrota", font=fnt, fill=ImageColor.getrgb(foreground))
+    draw.text(xy, word, font=fnt, fill=ImageColor.getrgb(foreground))
+    # create a rectangle around the word in order to detect collisions
+    # let's break it down: at first I thought the x coordinates of the rectangles would be equal to
+    # fontsize * number of letters. Turns out that's too big and that diving the length in half gives a decent result
+    # however, the last letter is cut off, so to avoid that I add 1 (it sometimes leaves an empty space). I was going
+    # with 0.5, which actually creates a tight fit, but it cuts off the last letter in some cases.
+    # For the y coordinates, just adding the font_size worked fine except for letter like 'p' and 'q', which
+    # have kind of like a tail. To accomodate for that, adding 0.25 to the font size works great.
+    draw.rectangle([xy, (xy[0]+font_size*(len(word)//2+1), xy[1]+font_size*1.25)], outline=foreground)
     img.show()
 
-
+# todo: put this in a config file
 font_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
 width = int(sys.argv[1])
 height = int(sys.argv[2])
