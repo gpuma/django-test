@@ -5,6 +5,7 @@ Django==2.0
 kombu==4.1.0
 nltk==3.2.5
 numpy==1.13.3
+Pillow==5.0.0
 pytz==2017.3
 six==1.11.0
 vine==1.1.4

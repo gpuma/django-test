@@ -1,5 +1,7 @@
 # nlp library
 from nltk.corpus import stopwords
+# image library
+from PIL import Image, ImageDraw, ImageColor, ImageFont
 # for command line arguments
 import sys
 import re
@@ -42,9 +44,25 @@ def get_word_freq(word_list, normalize=True):
     return word_freq
 
 
-filename = sys.argv[1]
-words = get_words(filename)
+def create_word_cloud(word_list, width, height, font_size, background, foreground, xy):
+    img = Image.new("RGB", (width, height), ImageColor.getrgb(background))
+    fnt = ImageFont.truetype(font_location, font_size)
+    draw = ImageDraw.Draw(img)
+    draw.text(xy, "palabrota", font=fnt, fill=ImageColor.getrgb(foreground))
+    img.show()
+
+
+font_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
+width = int(sys.argv[1])
+height = int(sys.argv[2])
+fnt_size = int(sys.argv[3])
+bg_color = sys.argv[4]
+fg_color = sys.argv[5]
+xy = (int(sys.argv[6]), int(sys.argv[7]))
+
+#words = get_words(filename)
 #print (words)
 #print("there's %d words" % len(words))
 #print("this is the frequency")
-print(get_word_freq(words)[:10])
+#print(get_word_freq(words)[:10])
+create_word_cloud(None, width, height, fnt_size, bg_color, fg_color, xy)
