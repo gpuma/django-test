@@ -22,7 +22,7 @@ class WordCloud:
         #self.words = [Word(w, f) for w, f in word_freq]
 
     def get_center_position(self, word):
-        """given a text of type Word, it returns the coordinates at which it
+        """given a word of type Word, it returns the coordinates at which it
         should be drawn on the current canvas, in order to appear in the center."""
         # todo: it's not actually the center, it's a bit off
         return self.canv_x / 2 - (word.length * word.font_size) / 2, self.canv_y / 2 - word.font_size / 2
@@ -52,7 +52,7 @@ class Word:
         self.box_y = -1
 
     def get_rectangle(self):
-        # calculates the four coordinates required to draw a rectangle around the text in order to detect collisions
+        # calculates the four coordinates required to draw a rectangle around the word in order to detect collisions
         # let's break it down: at first I thought the x coordinates of the rectangles would be equal to
         # fontsize * number of letters. Turns out that's too big and that diving the length in half
         # gives a decent result. however, the last letter is cut off so, in order to avoid that
@@ -82,7 +82,7 @@ def get_words(filename):
 
 
 def get_word_freq(word_list, normalize=True):
-    """Returns a sorted list of (text,text count) tuples in descending order.
+    """Returns a sorted list of (word,word count) tuples in descending order.
     The frequency is normalized to values between 0 and 1 by default."""
     word_freq_dict = {}
     for w in word_list:
@@ -95,12 +95,12 @@ def get_word_freq(word_list, normalize=True):
         word_freq_dict.update((key, round(val / len(word_list), 3)) for key, val in word_freq_dict.items())
 
     unsorted_word_freq = [(key, val) for key, val in word_freq_dict.items()]
-    # sorting by text frequency in descending order
+    # sorting by word frequency in descending order
     word_freq = sorted(unsorted_word_freq, key=lambda tup: tup[1], reverse=True)
     return word_freq
 
 
-# w[0]-> text, w[1] -> frequency, w[2] -> coordinates, w[3] -> coordinates
+# w[0]-> word, w[1] -> frequency, w[2] -> coordinates, w[3] -> coordinates
 def place_words(word_list, max_font, width, height):
     max_freq=word_list[0][1]
     word_list[0][2]=get_center_position(width, height, word_list[0])
