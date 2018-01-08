@@ -5,6 +5,8 @@ from PIL import Image, ImageDraw, ImageColor, ImageFont
 # for command line arguments
 import sys
 import re
+# used for drawing the words
+import random
 
 
 class WordCloud:
@@ -19,11 +21,17 @@ class WordCloud:
         #self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
         self.font_location = "C:\\Anaconda3\\Library\\lib\\fonts\\DejaVuSerif.ttf"
         #ImageFont.truetype(font_location, font_size)
-        # todo: uncomment
-        #self.words = [Word(w, f) for w, f in word_freq]
+        # todo: check this shit
+        #self.word_freq = [Word(w, f) for w, f in word_freq]
+        # list of words and frequencies
+        self.word_freq = word_freq
+        # list of Words
+        self.words = []
+
+        random.seed()
 
     def get_center_position(self, word):
-        """given a word of type Word, it returns the coordinates at which it
+        """given a word of type Word, it returns the x, y coordinates at which it
         should be drawn on the current canvas, in order to appear in the center."""
         # todo: it's not actually the center, it's a bit off
         return self.canv_x / 2 - (word.length * word.font_size) / 2, self.canv_y / 2 - word.font_size / 2
@@ -36,13 +44,40 @@ class WordCloud:
         self.draw.text((word.x, word.y), word.text, font=fnt, fill=ImageColor.getrgb(self.fg_color))
         self.draw.rectangle(word.get_box_coord(), outline=self.fg_color)
 
+    def get_relative_font_size(self, max_freq, freq):
+        """returns the relative font size for the specified word frequency,
+        given that the maximum frequency should correspond to the maximum font size."""
+        # simple cross-multiplication
+        # font should be integer
+        return int(freq*self.max_font_size/max_freq)
+
+    def create_word_cloud(self):
+        """creates an image with a word cloud based on the word-freq list and parameters provided when
+        this class is instantiated"""
+        # the most frequent word is at the beginning of the list
+        most_freq_word = self.word_freq[0]
+        max_freq = most_freq_word[1]
+
+        # initializing list of Words
+        self.words = [Word(w, f, font_size=self.get_relative_font_size(max_freq, f)) for w, f in self.word_freq]
+
+        # most frequent word goes in the center
+        self.words[0].set_coordinates(self.get_center_position(self.words[0]))
+        self.draw_word(self.words[0])
+
+        # rest of the words
+        for i in range(1, len(self.words)):
+            rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
+            self.words[i].set_coordinates(rand_xy)
+            self.draw_word(self.words[i])
+
     def show_word_cloud(self):
         """generates an image with the words drawn over it"""
         self.img.show()
 
 
 class Word:
-    def __init__(self, word, freq, x, y, font_size=0):
+    def __init__(self, word, freq, x=0, y=0, font_size=0):
         self.text = word
         self.length = len(word)
         self.freq = freq
@@ -50,6 +85,15 @@ class Word:
         self.x = x
         self.y = y
         # has the form: [x0, y0, x1, y1] (from PIL.ImageDraw)
+        # which are the opposing coordinates required to draw a rectangle
+        # todo: check, might not be necessary
+        self.box = self.get_box_coord()
+
+    def set_coordinates(self, xy):
+        """Set the coordinates according to the xy tuple (in that order)
+         and recalculates the collision box for the word."""
+        self.x = xy[0]
+        self.y = xy[1]
         self.box = self.get_box_coord()
 
     def get_box_dimensions(self):
@@ -67,7 +111,7 @@ class Word:
         # have kind of like a tail. To accomodate for that, adding 0.25 to the font size works great.
         return [self.x, self.y, self.x + self.font_size * (self.length // 2 + 1), self.y + self.font_size * 1.25]
 
-    def get_center_coord(self):
+    def get_center_point(self):
         """returns the center point of the box"""
         # midpoint formula
         return (self.box[0] + self.box[2]) * 0.5, (self.box[1] + self.box[3]) * 0.5
@@ -76,8 +120,8 @@ class Word:
         """returns True if the box around this word overlaps with the box of the other word."""
         (width_box_a, height_box_a), (width_box_b, height_box_b) = self.get_box_dimensions(), other_word.get_box_dimensions()
         # distance between the center points of both boxes
-        length = abs(self.get_center_coord()[0] - other_word.get_center_coord()[0])
-        height = abs(self.get_center_coord()[1] - other_word.get_center_coord()[1])
+        length = abs(self.get_center_point()[0] - other_word.get_center_point()[0])
+        height = abs(self.get_center_point()[1] - other_word.get_center_point()[1])
         gap_x = length - width_box_a * 0.5 - width_box_b * 0.5
         gap_y = height - height_box_a * 0.5 - height_box_b * 0.5
 
@@ -93,7 +137,7 @@ def get_words(filename):
     # english stop words, according to nltk data
     # todo: remove pronouns
     # lastly, they're converted to lowercase
-    file = open(filename)
+    file = open(filename, encoding="utf8")
     raw = file.read()
     file.close()
     words = re.findall(r'\w+', raw)
@@ -123,31 +167,28 @@ def get_word_freq(word_list, normalize=True):
     return word_freq
 
 
-# w[0]-> word, w[1] -> frequency, w[2] -> coordinates, w[3] -> coordinates
-def place_words(word_list, max_font, width, height):
-    max_freq=word_list[0][1]
-    word_list[0][2]=get_center_position(width, height, word_list[0])
-    #for i in range(1,len(word_list) - 1)
-
 # todo: put this in a config file
-width = int(sys.argv[1])
-height = int(sys.argv[2])
-fnt_size = int(sys.argv[3])
+filename = sys.argv[1]
+width = int(sys.argv[2])
+height = int(sys.argv[3])
+fnt_size = int(sys.argv[4])
 #bg_color = sys.argv[4]
 #fg_color = sys.argv[5]
 #xy = (int(sys.argv[6]), int(sys.argv[7]))
 
-#words = get_words(filename)
-#print (words)
+words = get_words(filename)[:15]
+print(words)
 #print("there's %d words" % len(words))
 #print("this is the frequency")
-#print(get_word_freq(words)[:10])
+#print()
 
-wc = WordCloud(None, width, height, fnt_size)
-word_a = Word("caquita", 0, 40, 50, fnt_size)
-word_b = Word("penis", 0, 350, 50, fnt_size)
-wc.draw_word(word_a)
-wc.draw_word(word_b)
+wc = WordCloud(get_word_freq(words), width, height, fnt_size)
+wc.create_word_cloud()
 wc.show_word_cloud()
-print(word_a.collides(word_b))
+# word_a = Word("caquita", 0, 40, 50, fnt_size)
+# word_b = Word("penis", 0, 350, 50, fnt_size)
+# wc.draw_word(word_a)
+# wc.draw_word(word_b)
+# wc.show_word_cloud()
+# print(word_a.collides(word_b))
 #create_word_cloud(None, width, height, fnt_size, bg_color, fg_color, xy)
