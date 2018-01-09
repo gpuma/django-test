@@ -66,14 +66,33 @@ class WordCloud:
         self.draw_word(self.words[0])
 
         # rest of the words
+        # algorithm: in descending order (from most frequent to least), randomly generate a position
+        # for the word, check if it doesn't intersect with any of the previous words and place it
+        # todo: create a more efficient algorithm, right now it's brute force, with an emphasis on brute
         for i in range(1, len(self.words)):
+            # todo: DRY
+            # todo: randomly generated coordinates do not take into account the length of the word. i.e. a long word
+            # might start at the edge of the screen but get cut off by the image limits
             rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
             self.words[i].set_coordinates(rand_xy)
+            while WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
+                rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
+                self.words[i].set_coordinates(rand_xy)
             self.draw_word(self.words[i])
 
     def show_word_cloud(self):
         """generates an image with the words drawn over it"""
         self.img.show()
+
+    # todo: check if necessary to be static
+    @staticmethod
+    def word_intersects_with_the_rest(word, other_words):
+        """Returns True if the given word intersects with any of
+        the other words' collision boxes"""
+        for w in other_words:
+            if word.collides(w):
+                return True
+        return False
 
 
 class Word:
@@ -135,7 +154,6 @@ def get_words(filename):
     # words are found by matching against a regex
     # then they're further filtered by excluding any
     # english stop words, according to nltk data
-    # todo: remove pronouns
     # lastly, they're converted to lowercase
     file = open(filename, encoding="utf8")
     raw = file.read()
@@ -144,7 +162,8 @@ def get_words(filename):
 
     # we cast the stopwords into a set to speed it up, since sets
     # are implemented as hash tables
-    filtered_words = [w.lower() for w in words if w not in set(stopwords.words('english'))]
+    # todo: clean this up,
+    filtered_words = [w.lower() for w in words if w.lower() not in set(stopwords.words('english'))]
     return filtered_words
 
 
@@ -176,13 +195,13 @@ fnt_size = int(sys.argv[4])
 #fg_color = sys.argv[5]
 #xy = (int(sys.argv[6]), int(sys.argv[7]))
 
-words = get_words(filename)[:15]
+words = get_word_freq(get_words(filename))[:15]
 print(words)
 #print("there's %d words" % len(words))
 #print("this is the frequency")
 #print()
 
-wc = WordCloud(get_word_freq(words), width, height, fnt_size)
+wc = WordCloud(words, width, height, fnt_size)
 wc.create_word_cloud()
 wc.show_word_cloud()
 # word_a = Word("caquita", 0, 40, 50, fnt_size)
