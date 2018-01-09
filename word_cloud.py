@@ -42,7 +42,18 @@ class WordCloud:
         # todo: draw in actual position instead of center
         # word.x, word.y = self.get_center_position(word)
         self.draw.text((word.x, word.y), word.text, font=fnt, fill=ImageColor.getrgb(self.fg_color))
-        self.draw.rectangle(word.get_box_coord(), outline=self.fg_color)
+        # self.draw.rectangle(word.get_box_coord(), outline=self.fg_color)
+
+    # todo: might need to eliminate this, results are too slow
+    def is_touching_edges(self, word):
+        """returns True if the given word's collision box exceeds the canvas dimensions"""
+        # possibilities:
+        # right side touches right edge
+        # left side touches left edge
+        # bottom vertices touch bottom
+        # top vertices touch upper edge
+        #return word.box[2] > self.canv_x or word.box[0] < self.canv_x # or  or
+        return word.box[2] > self.canv_x or word.box[3] > self.canv_y #or word.box[1] < self.canv_y
 
     def get_relative_font_size(self, max_freq, freq):
         """returns the relative font size for the specified word frequency,
@@ -75,7 +86,9 @@ class WordCloud:
             # might start at the edge of the screen but get cut off by the image limits
             rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
             self.words[i].set_coordinates(rand_xy)
-            while WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
+            # todo: this could be  improved with dynamic programming
+            while self.is_touching_edges(self.words[i]) or \
+                    WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
                 rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
                 self.words[i].set_coordinates(rand_xy)
             self.draw_word(self.words[i])
