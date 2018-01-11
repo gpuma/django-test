@@ -7,25 +7,27 @@ import sys
 import re
 # used for drawing the words
 import random
-
+import math
 
 class WordCloud:
     def __init__(self, word_freq, x, y, max_font_size, background="white", foreground="black", automatic_size = True):
         self.max_font_size = max_font_size
-        # image dimensions will be calculated
-#        if not automatic_size:
-        self.canv_x = x
-        self.canv_y = y
         self.bg_color = background
         self.fg_color = foreground
-        self.img = Image.new("RGB", (self.canv_x, self.canv_y), ImageColor.getrgb(background))
-        self.draw = ImageDraw.Draw(self.img)
         #self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
         self.font_location = "C:\\Anaconda3\\Library\\lib\\fonts\\DejaVuSerif.ttf"
         # list of word, frequency pairs
         self.word_freq = word_freq
         # list of Words (carries display information)
         self.words = self.initialize_word_list()
+        # image dimensions can be calculated automatically
+        if automatic_size:
+            self.canv_x, self.canv_y = self.get_automatic_dimensions()
+        else:
+            self.canv_x = x
+            self.canv_y = y
+        self.img = Image.new("RGB", (self.canv_x, self.canv_y), ImageColor.getrgb(background))
+        self.draw = ImageDraw.Draw(self.img)
         random.seed()
 
     def get_center_position(self, word):
@@ -105,6 +107,15 @@ class WordCloud:
             if word.collides(w):
                 return True
         return False
+
+    def get_automatic_dimensions(self):
+        """Calculates the appropiate width and height of the image, in order
+        to display the Word Cloud correctly, based on the list of Words"""
+        sum_of_all_areas = sum([w.get_box_area() for w in self.words])
+        # for now it's a square image
+        # 1.3 is an arbitrary scale that gives good results
+        edge_size = int(math.sqrt(sum_of_all_areas) * 1.3)
+        return edge_size, edge_size
 
 
 class Word:
