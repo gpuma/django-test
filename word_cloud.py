@@ -10,8 +10,10 @@ import random
 
 
 class WordCloud:
-    def __init__(self, word_freq, x, y, max_font_size, background="white", foreground="black"):
+    def __init__(self, word_freq, x, y, max_font_size, background="white", foreground="black", automatic_size = True):
         self.max_font_size = max_font_size
+        # image dimensions will be calculated
+#        if not automatic_size:
         self.canv_x = x
         self.canv_y = y
         self.bg_color = background
@@ -20,14 +22,10 @@ class WordCloud:
         self.draw = ImageDraw.Draw(self.img)
         #self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
         self.font_location = "C:\\Anaconda3\\Library\\lib\\fonts\\DejaVuSerif.ttf"
-        #ImageFont.truetype(font_location, font_size)
-        # todo: check this shit
-        #self.word_freq = [Word(w, f) for w, f in word_freq]
-        # list of words and frequencies
+        # list of word, frequency pairs
         self.word_freq = word_freq
-        # list of Words
-        self.words = []
-
+        # list of Words (carries display information)
+        self.words = self.initialize_word_list()
         random.seed()
 
     def get_center_position(self, word):
@@ -48,12 +46,9 @@ class WordCloud:
     def is_touching_edges(self, word):
         """returns True if the given word's collision box exceeds the canvas dimensions"""
         # possibilities:
-        # right side touches right edge
-        # left side touches left edge
-        # bottom vertices touch bottom
-        # top vertices touch upper edge
-        #return word.box[2] > self.canv_x or word.box[0] < self.canv_x # or  or
-        return word.box[2] > self.canv_x or word.box[3] > self.canv_y #or word.box[1] < self.canv_y
+        # we only check if the word exceeds the right or bottom edge since the randomly
+        # generated dimensions start from (0,0) so they cannot exceed the left or top edge
+        return word.box[2] > self.canv_x or word.box[3] > self.canv_y
 
     def get_relative_font_size(self, max_freq, freq):
         """returns the relative font size for the specified word frequency,
@@ -62,15 +57,19 @@ class WordCloud:
         # font should be integer
         return int(freq*self.max_font_size/max_freq)
 
-    def create_word_cloud(self):
-        """creates an image with a word cloud based on the word-freq list and parameters provided when
-        this class is instantiated"""
+    def initialize_word_list(self):
+        """Creates the list of Words to be placed on the word cloud, using the given font,
+         along with their collision boxes, their size based on their frequency"""
+
         # the most frequent word is at the beginning of the list
         most_freq_word = self.word_freq[0]
         max_freq = most_freq_word[1]
 
         # initializing list of Words
-        self.words = [Word(w, f, font_size=self.get_relative_font_size(max_freq, f)) for w, f in self.word_freq]
+        return [Word(w, f, font_size=self.get_relative_font_size(max_freq, f)) for w, f in self.word_freq]
+
+    def create_word_cloud(self):
+        """Creates an image with a word cloud based on the initialized word list"""
 
         # most frequent word goes in the center
         self.words[0].set_coordinates(self.get_center_position(self.words[0]))
@@ -88,7 +87,7 @@ class WordCloud:
             self.words[i].set_coordinates(rand_xy)
             # todo: this could be  improved with dynamic programming
             while self.is_touching_edges(self.words[i]) or \
-                    WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
+                WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
                 rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
                 self.words[i].set_coordinates(rand_xy)
             self.draw_word(self.words[i])
@@ -131,6 +130,11 @@ class Word:
     def get_box_dimensions(self):
         """returns the width and height of the box around the word"""
         return self.box[2] - self.box[0], self.box[3] - self.box[1]
+
+    def get_box_area(self):
+        """Returns the area of the collision box around the word."""
+        width, height = self.get_box_dimensions()
+        return width*height
 
     def get_box_coord(self):
         # calculates the two coordinates required to draw a rectangle around the word in order to detect collisions
