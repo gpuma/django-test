@@ -1,6 +1,9 @@
+- clone the repo: git clone https://github.com/gpuma/phuyu
+- cd phuyu
+- python -m venv venv
+- (windows) venv\Scripts\activate.bat
+- pip install -r requirements.txt
+
 pip install ntlk
 import ntlk
 nltk.download("stopwords")
-#required for tokenization
-nltk.download('punkt')
-
