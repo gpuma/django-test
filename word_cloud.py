@@ -10,16 +10,25 @@ import random
 import math
 
 class WordCloud:
-    def __init__(self, word_freq, x, y, max_font_size, background="white", foreground="black", automatic_size = True):
+    def __init__(self, word_freq, max_font_size, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
         self.max_font_size = max_font_size
         self.bg_color = background
         self.fg_color = foreground
-        #self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
+        # for linux
+        # self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
+        # for windows
         self.font_location = "C:\\Anaconda3\\Library\\lib\\fonts\\DejaVuSerif.ttf"
+
+        # if a limit on the word number is not specified or if it exceeds
+        # the amount of words, we should use the whole word list
+        if top_n_words == 0 or top_n_words > len(word_freq):
+            top_n_words = len(word_freq)
         # list of word, frequency pairs
-        self.word_freq = word_freq
+        self.word_freq = word_freq[:top_n_words]
+
         # list of Words (carries display information)
         self.words = self.initialize_word_list()
+
         # image dimensions can be calculated automatically
         if automatic_size:
             self.canv_x, self.canv_y = self.get_automatic_dimensions()
@@ -216,20 +225,19 @@ def get_word_freq(word_list, normalize=True):
 
 # todo: put this in a config file
 filename = sys.argv[1]
-width = int(sys.argv[2])
-height = int(sys.argv[3])
-fnt_size = int(sys.argv[4])
+word_count = int(sys.argv[2])
+fnt_size = int(sys.argv[3])
 #bg_color = sys.argv[4]
 #fg_color = sys.argv[5]
 #xy = (int(sys.argv[6]), int(sys.argv[7]))
 
-words = get_word_freq(get_words(filename))[:15]
+words = get_word_freq(get_words(filename))
 print(words)
 #print("there's %d words" % len(words))
 #print("this is the frequency")
 #print()
 
-wc = WordCloud(words, width, height, fnt_size)
+wc = WordCloud(words, max_font_size=fnt_size)
 wc.create_word_cloud()
 wc.show_word_cloud()
 # word_a = Word("caquita", 0, 40, 50, fnt_size)
