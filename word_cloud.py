@@ -237,7 +237,9 @@ print(words)
 #print("this is the frequency")
 #print()
 
-wc = WordCloud(words, max_font_size=fnt_size)
+# todo: since when processing many words the least frequent are too small
+# to be readable, we might want to start using the min_font_size instead of max
+wc = WordCloud(words, top_n_words=word_count,  max_font_size=fnt_size)
 wc.create_word_cloud()
 wc.show_word_cloud()
 # word_a = Word("caquita", 0, 40, 50, fnt_size)
