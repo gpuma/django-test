@@ -1,0 +1,11 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'nube/style.css' %}"/>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'nube:create' %}" method="post">
+{% csrf_token %}
+  <input type="text" name="url" />
+  <input type="submit" />
+</form>
