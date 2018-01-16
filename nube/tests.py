@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .word_cloud import WordCloud
+from PIL import ImageFont
 
 def create_dummy_local_file():
     """
@@ -15,6 +16,8 @@ class WordCloudTests(TestCase):
         # todo: change to something more dynamic
         test_filename = 'D:\\borrar.txt'
         cloud = WordCloud(uri=test_filename, type="local")
+        # font is valid
+        fnt = ImageFont.truetype(cloud.font_location, 10)
         # dimensions must be greater zero
         self.assertGreater(cloud.canv_x, 0)
         self.assertGreater(cloud.canv_y, 0)
@@ -25,6 +28,8 @@ class WordCloudTests(TestCase):
         # todo: change this shit
         test_url = 'https://pastebin.com/raw/y4BskUX2'
         cloud = WordCloud(test_url, type="internet")
+        # font is valid
+        fnt = ImageFont.truetype(cloud.font_location, 10)
         # dimensions must be greater zero
         self.assertGreater(cloud.canv_x, 0)
         self.assertGreater(cloud.canv_y, 0)

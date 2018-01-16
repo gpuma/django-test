@@ -20,7 +20,7 @@ class WordCloud:
         # for linux
         # self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
         # for windows
-        self.font_location = "C:\\Windows\\Fonts\\DejaVuSerif.ttf"
+        self.font_location = "C:/fonts/DejaVuSerif.ttf"
 
         # two types for now: local file and internet filename
         word_freq = get_word_freq(get_words(uri, type))
@@ -44,6 +44,8 @@ class WordCloud:
         self.img = Image.new("RGB", (self.canv_x, self.canv_y), ImageColor.getrgb(background))
         self.draw = ImageDraw.Draw(self.img)
         random.seed()
+        # main function
+        self.create_word_cloud()
 
     def get_center_position(self, word):
         """given a word of type Word, it returns the x, y coordinates at which it

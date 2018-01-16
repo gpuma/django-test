@@ -6,6 +6,6 @@
 
 <form action="{% url 'nube:create' %}" method="post">
 {% csrf_token %}
-  <input type="text" name="url" />
+  <input type="text" name="uri" />
   <input type="submit" />
 </form>
