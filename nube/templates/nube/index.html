@@ -1,11 +1,18 @@
-{% load static %}
+{% extends "nube/base.html" %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'nube/style.css' %}"/>
-
+{% block content %}
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 <form action="{% url 'nube:create' %}" method="post">
 {% csrf_token %}
-  <input type="text" name="uri" />
-  <input type="submit" />
+<div class="jumbotron">
+  <h1>{{header}}</h1>
+  <h2>{{subheader}}</h2>
+  <div class="form-group">
+  <input type="text" class="form-control" autofocus name="uri" />
+  </div>
+  <!--must be outside form-group so it's not sticking to the form"-->
+  <input type="submit" class="btn btn-success btn-lg" value="Create Word Cloud"/>
+</div>
 </form>
+{% endblock content %}

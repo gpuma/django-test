@@ -8,7 +8,8 @@ from .word_cloud import WordCloud
 
 def index(request):
     # todo: turn this into a generic view?
-    return render(request, 'nube/index.html')
+    return render(request, 'nube/index.html',
+                  {'header':'Welcome to Phuyu', 'subheader':'Select a plaintext'})
 
 def create(request):
     """
