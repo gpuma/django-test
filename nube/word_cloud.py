@@ -8,6 +8,9 @@ import re
 # used for drawing the words
 import random
 import math
+# for reading text from a url
+import requests
+
 
 class WordCloud:
     def __init__(self, uri, type, max_font_size= 120, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
@@ -20,11 +23,7 @@ class WordCloud:
         self.font_location = "C:\\Windows\\Fonts\\DejaVuSerif.ttf"
 
         # two types for now: local file and internet filename
-        # todo: add support for internet file
-        word_freq = []
-        if type=="local":
-            # todo: probably needs refactoring (maybe put inside this class)
-            word_freq = get_word_freq(get_words(uri))
+        word_freq = get_word_freq(get_words(uri, type))
 
         # if a limit on the word number is not specified or if it exceeds
         # the amount of words, we should use the whole word list
@@ -200,15 +199,21 @@ class Word:
         return gap_x < 0 and gap_y < 0
 
 
-def get_words(filename):
-    """Returns a list of words extracted from the file"""
+def get_words(uri, type):
+    """Returns a list of words extracted from the file
+    located at the specified uri, can be local or a plaintext from the internet"""
     # words are found by matching against a regex
     # then they're further filtered by excluding any
     # english stop words, according to nltk data
     # lastly, they're converted to lowercase
-    file = open(filename, encoding="utf8")
-    raw = file.read()
-    file.close()
+    if type == "local":
+        file = open(uri, encoding="utf8")
+        raw = file.read()
+        file.close()
+    elif type== "internet":
+        raw = requests.get(uri).text
+    else:
+        raise ValueError("URI type not supported.")
     words = re.findall(r'\w+', raw)
 
     # we cast the stopwords into a set to speed it up, since sets
