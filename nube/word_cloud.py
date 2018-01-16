@@ -10,14 +10,21 @@ import random
 import math
 
 class WordCloud:
-    def __init__(self, word_freq, max_font_size, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
+    def __init__(self, uri, type, max_font_size= 120, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
         self.max_font_size = max_font_size
         self.bg_color = background
         self.fg_color = foreground
         # for linux
         # self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
         # for windows
-        self.font_location = "C:\\Anaconda3\\Library\\lib\\fonts\\DejaVuSerif.ttf"
+        self.font_location = "C:\\Windows\\Fonts\\DejaVuSerif.ttf"
+
+        # two types for now: local file and internet filename
+        # todo: add support for internet file
+        word_freq = []
+        if type=="local":
+            # todo: probably needs refactoring (maybe put inside this class)
+            word_freq = get_word_freq(get_words(uri))
 
         # if a limit on the word number is not specified or if it exceeds
         # the amount of words, we should use the whole word list
@@ -106,6 +113,13 @@ class WordCloud:
     def show_word_cloud(self):
         """generates an image with the words drawn over it"""
         self.img.show()
+
+    def get_word_cloud_as_image(self):
+        """
+        Returns an PIL.Image instance with the corresponding
+        word cloud data, ready to be displayed.
+        """
+        return self.img;
 
     # todo: check if necessary to be static
     @staticmethod
@@ -221,31 +235,3 @@ def get_word_freq(word_list, normalize=True):
     # sorting by word frequency in descending order
     word_freq = sorted(unsorted_word_freq, key=lambda tup: tup[1], reverse=True)
     return word_freq
-
-
-# todo: put this in a config file
-filename = sys.argv[1]
-word_count = int(sys.argv[2])
-fnt_size = int(sys.argv[3])
-#bg_color = sys.argv[4]
-#fg_color = sys.argv[5]
-#xy = (int(sys.argv[6]), int(sys.argv[7]))
-
-words = get_word_freq(get_words(filename))
-print(words)
-#print("there's %d words" % len(words))
-#print("this is the frequency")
-#print()
-
-# todo: since when processing many words the least frequent are too small
-# to be readable, we might want to start using the min_font_size instead of max
-wc = WordCloud(words, top_n_words=word_count,  max_font_size=fnt_size)
-wc.create_word_cloud()
-wc.show_word_cloud()
-# word_a = Word("caquita", 0, 40, 50, fnt_size)
-# word_b = Word("penis", 0, 350, 50, fnt_size)
-# wc.draw_word(word_a)
-# wc.draw_word(word_b)
-# wc.show_word_cloud()
-# print(word_a.collides(word_b))
-#create_word_cloud(None, width, height, fnt_size, bg_color, fg_color, xy)
