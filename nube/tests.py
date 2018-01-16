@@ -1,6 +1,10 @@
 from django.test import TestCase
-from .word_cloud import WordCloud
+from django.urls import reverse
+
 from PIL import ImageFont
+
+from .word_cloud import WordCloud
+from .constants import *
 
 def create_dummy_local_file():
     """
@@ -10,7 +14,6 @@ def create_dummy_local_file():
     # todo: not sure if necessary
 
 
-# Create your tests here.
 class WordCloudTests(TestCase):
     def test_word_cloud_from_local_file(self):
         # todo: change to something more dynamic
@@ -35,3 +38,12 @@ class WordCloudTests(TestCase):
         self.assertGreater(cloud.canv_y, 0)
         # word_list must have items
         self.assertGreater(len(cloud.words), 0)
+
+class CreateViewTests(TestCase):
+    def test_no_uri(self):
+        """
+        If no URI is provided, an error message is displayed
+        """
+        response = self.client.post(reverse('nube:create'), {'uri':''})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, URI_NOT_SPECIFIED)

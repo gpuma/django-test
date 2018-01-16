@@ -2,16 +2,16 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponse
 from .word_cloud import WordCloud
+from requests.exceptions import MissingSchema
+
+from .constants import *
 
 #class IndexView(generic.FormView):
     #template_name = 'nube/index.html'
 
 def index(request):
     # todo: turn this into a generic view?
-    return render(request, 'nube/index.html',{
-        'header':'Welcome to Phuyu',
-        'uri_placeholder':'Enter the URL of a plaintext',
-        })
+    return render(request, 'nube/index.html')
 
 def create(request):
     """
@@ -19,7 +19,18 @@ def create(request):
     given URI
     """
     response = HttpResponse(content_type="image/png")
-    cloud = WordCloud(request.POST['uri'], type="internet")
-    img = cloud.get_word_cloud_as_image()
-    img.save(response, 'PNG')
-    return response
+    if request.POST['uri'] == '':
+        return render(request, 'nube/index.html', {
+            'error_message': URI_NOT_SPECIFIED
+        })
+    try:
+        cloud = WordCloud(request.POST['uri'], type="internet")
+    except (MissingSchema):
+        # todo: this might need a redirect instead
+        return render(request, 'nube/index.html', {
+            'error_message': URI_COULD_NOT_BE_PROCESSED
+        })
+    else:
+        img = cloud.get_word_cloud_as_image()
+        img.save(response, 'PNG')
+        return response
