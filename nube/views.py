@@ -3,7 +3,12 @@ from django.views import generic
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from .word_cloud import WordCloud
+
+from django.conf import settings
+
 from requests.exceptions import MissingSchema
+
+import os
 
 from .constants import *
 
@@ -39,5 +44,10 @@ def create(request):
         })
     else:
         img = cloud.get_word_cloud_as_image()
-        img.save(response, 'PNG')
-        return response
+        # todo: add dynamic filename generation
+        filename = 'generated.png'
+        local_path = os.path.join(settings.MEDIA_ROOT, filename)
+        img.save(local_path)
+        return render(request, 'nube/cloud_image.html', {
+            'img_filename': filename,
+        })
