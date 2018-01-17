@@ -10,6 +10,9 @@ from requests.exceptions import MissingSchema
 
 import os
 
+# to generate a random filename
+import uuid
+
 from .constants import *
 
 #class IndexView(generic.FormView):
@@ -44,10 +47,17 @@ def create(request):
         })
     else:
         img = cloud.get_word_cloud_as_image()
-        # todo: add dynamic filename generation
-        filename = 'generated.png'
+        filename = get_random_filename('.png')
         local_path = os.path.join(settings.MEDIA_ROOT, filename)
         img.save(local_path)
         return render(request, 'nube/cloud_image.html', {
             'img_filename': filename,
         })
+
+def get_random_filename(ext):
+    """
+    Returns a randomly generated string with the specified
+    extension `ext` appended at the end. `ext` should have a dot.
+    """
+    # hex returns a string with no dashes
+    return str(uuid.uuid4().hex) + ext
