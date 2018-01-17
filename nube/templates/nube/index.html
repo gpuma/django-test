@@ -2,13 +2,19 @@
 
 {% block content %}
 
-<form action="{% url 'nube:create' %}" method="post">
+<form action="{% url 'nube:create' %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
 <div class="jumbotron">
   <h1>Welcome to Phuyu</h1>
   {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+  <!-- todo: maybe add some radiobutton to distinguish-->
   <div class="form-group">
-  <input type="text" class="form-control" autofocus name="uri" placeholder="Enter the URL of a plaintext file..."/>
+    <input type="text" class="form-control" autofocus name="uri" placeholder="Enter the URL of a plaintext file...">
+  </div>
+  <div class="form-group">
+    <input type="file" class="form-control-file" name="myfile"
+    aria-describedby="fileHelp">
+    <small id="fileHelp" class="form-text text-muted">...or you can select a file from your computer</small>
   </div>
   <!--must be outside form-group so it's not sticking to the form"-->
   <input type="submit" class="btn btn-success btn-lg" value="Create Word Cloud"/>

@@ -13,7 +13,7 @@ import requests
 
 
 class WordCloud:
-    def __init__(self, uri, type, max_font_size= 120, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
+    def __init__(self, file_ref, type, max_font_size= 120, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
         self.max_font_size = max_font_size
         self.bg_color = background
         self.fg_color = foreground
@@ -23,7 +23,7 @@ class WordCloud:
         self.font_location = "C:/fonts/DejaVuSerif.ttf"
 
         # two types for now: local file and internet filename
-        word_freq = get_word_freq(get_words(uri, type))
+        word_freq = get_word_freq(get_words(file_ref, type))
 
         # if a limit on the word number is not specified or if it exceeds
         # the amount of words, we should use the whole word list
@@ -201,21 +201,29 @@ class Word:
         return gap_x < 0 and gap_y < 0
 
 
-def get_words(uri, type):
-    """Returns a list of words extracted from the file
-    located at the specified uri, can be local or a plaintext from the internet"""
+def get_words(file_ref, type):
+    """
+    Returns a list of words extracted from a file.
+    file_ref can be a local filename, a URL or a file
+    stored in memory
+    """
     # words are found by matching against a regex
     # then they're further filtered by excluding any
     # english stop words, according to nltk data
     # lastly, they're converted to lowercase
     if type == "local":
-        file = open(uri, encoding="utf8")
+        file = open(file_ref, encoding="utf8")
         raw = file.read()
         file.close()
-    elif type== "internet":
-        raw = requests.get(uri).text
+    elif type == "internet":
+        raw = requests.get(file_ref).text
+    elif type == "upload":
+        # type is InMemoryFileUpload
+        # read() returns html (a byte-like object)
+        # thus, we need to decode
+        raw = file_ref.read().decode('utf-8')
     else:
-        raise ValueError("URI type not supported.")
+        raise ValueError("Type not supported.")
     words = re.findall(r'\w+', raw)
 
     # we cast the stopwords into a set to speed it up, since sets

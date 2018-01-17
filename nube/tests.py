@@ -18,7 +18,7 @@ class WordCloudTests(TestCase):
     def test_word_cloud_from_local_file(self):
         # todo: change to something more dynamic
         test_filename = 'D:\\borrar.txt'
-        cloud = WordCloud(uri=test_filename, type="local")
+        cloud = WordCloud(test_filename, type="local")
         # font is valid
         fnt = ImageFont.truetype(cloud.font_location, 10)
         # dimensions must be greater zero
@@ -46,4 +46,7 @@ class CreateViewTests(TestCase):
         """
         response = self.client.post(reverse('nube:create'), {'uri':''})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, URI_NOT_SPECIFIED)
+        self.assertContains(response, NOTHING_TO_PROCESS)
+
+    # todo: create this test once the interface is finalized
+    #def test_file_upload(self):

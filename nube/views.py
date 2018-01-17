@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponse
+from django.core.files.storage import FileSystemStorage
 from .word_cloud import WordCloud
 from requests.exceptions import MissingSchema
 
@@ -16,15 +17,21 @@ def index(request):
 def create(request):
     """
     Displays the generated WordCloud from the
-    given URI
+    given URI or uploaded file
     """
     response = HttpResponse(content_type="image/png")
-    if request.POST['uri'] == '':
+    # in order to avoid KeyError
+    myfile = request.FILES.get('myfile', None)
+
+    if request.POST['uri'] == '' and myfile is None:
         return render(request, 'nube/index.html', {
-            'error_message': URI_NOT_SPECIFIED
+            'error_message': NOTHING_TO_PROCESS
         })
     try:
-        cloud = WordCloud(request.POST['uri'], type="internet")
+        if myfile:
+            cloud = WordCloud(myfile, type="upload")
+        else:
+            cloud = WordCloud(request.POST['uri'], type="internet")
     except (MissingSchema):
         # todo: this might need a redirect instead
         return render(request, 'nube/index.html', {
