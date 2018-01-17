@@ -120,7 +120,7 @@ class WordCloud:
         Returns an PIL.Image instance with the corresponding
         word cloud data, ready to be displayed.
         """
-        return self.img;
+        return self.img
 
     # todo: check if necessary to be static
     @staticmethod
