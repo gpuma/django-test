@@ -56,12 +56,8 @@ class WordCloud:
     def draw_word(self, word):
         """draws a specific Word onto the canvas"""
         fnt = ImageFont.truetype(self.font_location, word.font_size)
-        # todo: draw in actual position instead of center
-        # word.x, word.y = self.get_center_position(word)
         self.draw.text((word.x, word.y), word.text, font=fnt, fill=ImageColor.getrgb(self.fg_color))
-        # self.draw.rectangle(word.get_box_coord(), outline=self.fg_color)
 
-    # todo: might need to eliminate this, results are too slow
     def is_touching_edges(self, word):
         """returns True if the given word's collision box exceeds the canvas dimensions"""
         # possibilities:
@@ -100,7 +96,6 @@ class WordCloud:
         # todo: create a more efficient algorithm, right now it's brute force, with an emphasis on brute
         for i in range(1, len(self.words)):
             # todo: DRY
-            # todo: randomly generated coordinates do not take into account the length of the word. i.e. a long word
             # might start at the edge of the screen but get cut off by the image limits
             rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
             self.words[i].set_coordinates(rand_xy)
@@ -228,7 +223,6 @@ def get_words(file_ref, type):
 
     # we cast the stopwords into a set to speed it up, since sets
     # are implemented as hash tables
-    # todo: clean this up,
     filtered_words = [w.lower() for w in words if w.lower() not in set(stopwords.words('english'))]
     return filtered_words
 
