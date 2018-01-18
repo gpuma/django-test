@@ -2,11 +2,7 @@
 
 {% block content %}
 
-<div class="jumbotron">
-  <h1>Your Word Cloud is ready!</h1>
-  <p>
-    <a href="{{MEDIA_URL}}{{img_filename}}" class="btn btn-success btn-lg" download>Save image...</a>
-  </p>
-  <img src="{{MEDIA_URL}}{{img_filename}}" class="img-fluid wc-img"/>
-</div>
+<h1>Your Word Cloud is ready!</h1>
+{% include "nube/subdetail.html" %}
+
 {% endblock content %}

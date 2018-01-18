@@ -2,9 +2,11 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+
 from .word_cloud import WordCloud
 
-from django.conf import settings
+from .models import CloudImage
 
 from requests.exceptions import MissingSchema
 
@@ -53,6 +55,10 @@ def create(request):
         return render(request, 'nube/cloud_image.html', {
             'img_filename': filename,
         })
+
+class ImageDetailView(generic.DetailView):
+    model = CloudImage
+    template_name = 'nube/detail.html'
 
 def get_random_filename(ext):
     """

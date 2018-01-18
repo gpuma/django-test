@@ -1,0 +1,12 @@
+{% extends "nube/base.html" %}
+
+{% block content %}
+
+<div class="text-center">
+  <h1>{{cloudimage.name}}</h1>
+</div>
+{# `img_filename` is the name of the variable at the included template #}
+{% with img_filename=cloudimage.image %}
+{% include "nube/subdetail.html" %}
+{% endwith %}
+{% endblock content %}
