@@ -125,3 +125,13 @@ STATIC_URL = '/static/'
 # for image serving
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Celery config
+CELERY_BROKER_URL = 'pyamqp://'
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TIMEZONE = 'America/Lima'
+CELERY_ENABLE_UTC = True
+# end of Celery config
