@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponse
-from django.core.files.storage import FileSystemStorage
+from django.http import JsonResponse # for AJAX
 from django.conf import settings
 
 from .word_cloud import WordCloud
@@ -69,6 +69,12 @@ class GalleryView(generic.ListView):
     # user's images
     def get_queryset(self):
         return CloudImage.objects.filter()
+
+def dummy_image(request):
+    data ={
+        'img_filename' : 'colin.png'
+    }
+    return JsonResponse(data)
 
 def get_random_filename(ext):
     """

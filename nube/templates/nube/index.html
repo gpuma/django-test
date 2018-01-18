@@ -8,7 +8,7 @@
   {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
   <!-- todo: maybe add some radiobutton to distinguish-->
   <div class="form-group">
-    <input type="text" class="form-control" autofocus name="uri" placeholder="Enter the URL of a plaintext file...">
+    <input type="text" class="form-control" autofocus id="uri" name="uri" placeholder="Enter the URL of a plaintext file...">
   </div>
   <div class="form-group">
     <input type="file" class="form-control-file" name="myfile"
@@ -19,3 +19,25 @@
   <input type="submit" class="btn btn-success btn-lg" value="Create Word Cloud"/>
 </form>
 {% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript">
+  $('form').on('submit',function(){
+   console.log('caught submit');
+
+   $.ajax({
+      url: '{% url 'nube:dummy' %}',
+      data: {
+        'username': 'caca'
+      },
+      dataType: 'json',
+      success: function (data) {
+          alert(data.img_filename);
+        }
+      });
+
+   //prevents submit
+   return false;
+  });
+</script>
+{% endblock javascript %}
