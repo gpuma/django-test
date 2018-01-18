@@ -60,6 +60,16 @@ class ImageDetailView(generic.DetailView):
     model = CloudImage
     template_name = 'nube/detail.html'
 
+# used for displaying a list of user images
+class GalleryView(generic.ListView):
+    template_name = 'nube/gallery.html'
+    context_object_name = 'images'
+
+    # todo: it returns all objects, should return only
+    # user's images
+    def get_queryset(self):
+        return CloudImage.objects.filter()
+
 def get_random_filename(ext):
     """
     Returns a randomly generated string with the specified
