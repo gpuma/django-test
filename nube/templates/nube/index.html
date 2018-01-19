@@ -2,7 +2,10 @@
 
 {% load static %}
 {% block content %}
-
+{% if user.is_authenticated == True %}
+<h3>Welcome back, {{user.username}}!</h3>
+<a href="{% url 'nube:logout' %}" class="btn btn-lg btn-danger">Log out</a>
+{% endif %}
 <form action="{% url 'nube:create' %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
   <h1>Welcome to Phuyu</h1>

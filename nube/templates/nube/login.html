@@ -1,0 +1,12 @@
+{% extends "nube/base.html" %}
+{% block content %}
+<h1>Welcome to Phuyu!</h1>
+{# <form action="{%url 'nube:login'r %}" method="post"> #}
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+    {{ form.as_p }}
+    </div>
+    <input type="submit" value="Submit"  class="btn btn-success btn-lg"/>
+</form>
+{% endblock content %}

@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.views import generic
-from django.http import HttpResponse
+from django.urls import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse  # for AJAX
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+
 from requests.exceptions import MissingSchema
 
 from .word_cloud import WordCloud
@@ -13,7 +16,6 @@ from nube.tasks import create_word_cloud_task
 
 
 def index(request):
-    # todo: turn this into a generic view?
     return render(request, 'nube/index.html')
 
 

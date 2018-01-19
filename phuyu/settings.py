@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from django.urls import reverse
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -135,3 +136,6 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TIMEZONE = 'America/Lima'
 CELERY_ENABLE_UTC = True
 # end of Celery config
+
+# AUTH
+LOGIN_REDIRECT_URL = 'nube:index'

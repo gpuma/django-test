@@ -13,9 +13,6 @@ import requests
 # to generate a random filename
 import uuid
 import os
-# serialization
-import base64
-from io import BytesIO
 # for article view
 from readability import Document
 from bs4 import BeautifulSoup
