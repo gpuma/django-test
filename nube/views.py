@@ -3,25 +3,14 @@ from django.views import generic
 from django.http import HttpResponse
 from django.http import JsonResponse  # for AJAX
 from django.conf import settings
-
-from .word_cloud import WordCloud
-
-from .models import CloudImage
-
 from requests.exceptions import MissingSchema
 
-import os
-
-# to generate a random filename
-import uuid
-
+from .word_cloud import WordCloud
+from .models import CloudImage
 from .constants import *
-
 # celery task test
-from nube.tasks import mul
+from nube.tasks import create_word_cloud_task
 
-# class IndexView(generic.FormView):
-# template_name = 'nube/index.html'
 
 def index(request):
     # todo: turn this into a generic view?
@@ -41,20 +30,22 @@ def create(request):
             'error_message': NOTHING_TO_PROCESS
         })
     try:
+        # todo: making a task synchronous (.get()) is not the recommended way of using celery
+        # have to research more on how to do this properly
         if myfile:
-            cloud = WordCloud(myfile, type="upload")
+            content = myfile
+            type = "upload"
         else:
-            cloud = WordCloud(request.POST['uri'], type="internet")
+            content = request.POST['uri']
+            type = "internet"
+        # main operation
+        filename = create_word_cloud_task.delay(content, type, settings.MEDIA_ROOT).get(timeout=60)
     except MissingSchema:
         # todo: this might need a redirect instead
         return render(request, 'nube/index.html', {
             'error_message': URI_COULD_NOT_BE_PROCESSED
         })
     else:
-        img = cloud.get_word_cloud_as_image()
-        filename = get_random_filename('.png')
-        local_path = os.path.join(settings.MEDIA_ROOT, filename)
-        img.save(local_path)
         return JsonResponse({
             'img_filename': filename,
         })
@@ -74,21 +65,3 @@ class GalleryView(generic.ListView):
     # user's images
     def get_queryset(self):
         return CloudImage.objects.filter()
-
-
-def dummy_image(request):
-    n=int(request.GET['number'])
-    res = mul.delay(n,n).get()
-    data = {
-        'img_filename': res
-    }
-    return JsonResponse(data)
-
-
-def get_random_filename(ext):
-    """
-    Returns a randomly generated string with the specified
-    extension `ext` appended at the end. `ext` should have a dot.
-    """
-    # hex returns a string with no dashes
-    return str(uuid.uuid4().hex) + ext

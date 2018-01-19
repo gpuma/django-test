@@ -6,6 +6,7 @@ from PIL import ImageFont
 from .word_cloud import WordCloud
 from .constants import *
 
+
 def create_dummy_local_file():
     """
     Returns the filename of a generated dummy
@@ -14,6 +15,7 @@ def create_dummy_local_file():
     # todo: not sure if necessary
 
 
+# todo: these tests are deprecated
 class WordCloudTests(TestCase):
     def test_word_cloud_from_local_file(self):
         # todo: change to something more dynamic
@@ -38,14 +40,15 @@ class WordCloudTests(TestCase):
         # word_list must have items
         self.assertGreater(len(cloud.words), 0)
 
+
 class CreateViewTests(TestCase):
     def test_no_uri(self):
         """
         If no URI is provided, an error message is displayed
         """
-        response = self.client.post(reverse('nube:create'), {'uri':''})
+        response = self.client.post(reverse('nube:create'), {'uri': ''})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, NOTHING_TO_PROCESS)
 
     # todo: create this test once the interface is finalized
-    #def test_file_upload(self):
+    # def test_file_upload(self):

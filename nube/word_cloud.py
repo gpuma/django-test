@@ -10,7 +10,12 @@ import random
 import math
 # for reading text from a url
 import requests
-
+# to generate a random filename
+import uuid
+import os
+# serialization
+import base64
+from io import BytesIO
 # for article view
 from readability import Document
 from bs4 import BeautifulSoup
@@ -122,6 +127,16 @@ class WordCloud:
         """
         return self.img
 
+    def save_word_cloud_to_fs(self, folder):
+        """
+        Saves the Word Cloud as PNG image with a randomly generated
+        filename, at the specified folder. It returns the filename only
+        """
+        filename = get_random_filename('.png')
+        local_path = os.path.join(folder, filename)
+        self.img.save(local_path)
+        return filename
+
     # todo: check if necessary to be static
     @staticmethod
     def word_intersects_with_the_rest(word, other_words):
@@ -190,7 +205,7 @@ class Word:
     def collides(self, other_word):
         """returns True if the box around this word overlaps with the box of the other word."""
         (width_box_a, height_box_a), (
-        width_box_b, height_box_b) = self.get_box_dimensions(), other_word.get_box_dimensions()
+            width_box_b, height_box_b) = self.get_box_dimensions(), other_word.get_box_dimensions()
         # distance between the center points of both boxes
         length = abs(self.get_center_point()[0] - other_word.get_center_point()[0])
         height = abs(self.get_center_point()[1] - other_word.get_center_point()[1])
@@ -268,9 +283,19 @@ def get_word_freq(word_list, normalize=True):
             word_freq_dict[w] = 1
     if normalize:
         # inplace update to avoid recreating the dictionary again
-        word_freq_dict.update((key, round(val / len(word_list), 3)) for key, val in word_freq_dict.items())
+        word_freq_dict.update((key, round(val / len(word_list), 3))
+                              for key, val in word_freq_dict.items())
 
     unsorted_word_freq = [(key, val) for key, val in word_freq_dict.items()]
     # sorting by word frequency in descending order
     word_freq = sorted(unsorted_word_freq, key=lambda tup: tup[1], reverse=True)
     return word_freq
+
+
+def get_random_filename(ext):
+    """
+    Returns a randomly generated string with the specified
+    extension `ext` appended at the end. `ext` should have a dot.
+    """
+    # hex returns a string with no dashes
+    return str(uuid.uuid4().hex) + ext
