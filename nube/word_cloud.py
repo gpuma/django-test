@@ -11,9 +11,14 @@ import math
 # for reading text from a url
 import requests
 
+# for article view
+from readability import Document
+from bs4 import BeautifulSoup
+
 
 class WordCloud:
-    def __init__(self, file_ref, type, max_font_size= 120, top_n_words=0, x=0, y=0, background="white", foreground="black", automatic_size = True):
+    def __init__(self, file_ref, type, max_font_size=120, top_n_words=0, x=0, y=0, background="white",
+                 foreground="black", automatic_size=True):
         self.max_font_size = max_font_size
         self.bg_color = background
         self.fg_color = foreground
@@ -70,7 +75,7 @@ class WordCloud:
         given that the maximum frequency should correspond to the maximum font size."""
         # simple cross-multiplication
         # font should be integer
-        return int(freq*self.max_font_size/max_freq)
+        return int(freq * self.max_font_size / max_freq)
 
     def initialize_word_list(self):
         """Creates the list of Words to be placed on the word cloud, using the given font,
@@ -101,7 +106,7 @@ class WordCloud:
             self.words[i].set_coordinates(rand_xy)
             # todo: this could be  improved with dynamic programming
             while self.is_touching_edges(self.words[i]) or \
-                WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
+                    WordCloud.word_intersects_with_the_rest(self.words[i], self.words[0:i]):
                 rand_xy = random.randrange(self.canv_x), random.randrange(self.canv_y)
                 self.words[i].set_coordinates(rand_xy)
             self.draw_word(self.words[i])
@@ -164,7 +169,7 @@ class Word:
     def get_box_area(self):
         """Returns the area of the collision box around the word."""
         width, height = self.get_box_dimensions()
-        return width*height
+        return width * height
 
     def get_box_coord(self):
         # calculates the two coordinates required to draw a rectangle around the word in order to detect collisions
@@ -184,7 +189,8 @@ class Word:
 
     def collides(self, other_word):
         """returns True if the box around this word overlaps with the box of the other word."""
-        (width_box_a, height_box_a), (width_box_b, height_box_b) = self.get_box_dimensions(), other_word.get_box_dimensions()
+        (width_box_a, height_box_a), (
+        width_box_b, height_box_b) = self.get_box_dimensions(), other_word.get_box_dimensions()
         # distance between the center points of both boxes
         length = abs(self.get_center_point()[0] - other_word.get_center_point()[0])
         height = abs(self.get_center_point()[1] - other_word.get_center_point()[1])
@@ -211,7 +217,15 @@ def get_words(file_ref, type):
         raw = file.read()
         file.close()
     elif type == "internet":
-        raw = requests.get(file_ref).text
+        response = requests.get(file_ref)
+
+        # two supported cases:
+        # url is regular html or url is plaintext
+        if 'html' in response.headers['Content-Type']:
+            raw = extract_content_from_html(response.text)
+        # if maybe add 'text/plain' check
+        else:
+            raw = response.text
     elif type == "upload":
         # type is InMemoryFileUpload
         # read() returns html (a byte-like object)
@@ -225,6 +239,22 @@ def get_words(file_ref, type):
     # are implemented as hash tables
     filtered_words = [w.lower() for w in words if w.lower() not in set(stopwords.words('english'))]
     return filtered_words
+
+
+# todo: there's probably a more efficient way to do this
+def extract_content_from_html(html):
+    """
+    Extracts the main content of a webpage. Similar to the
+    Reader View in Firefox or Pocket.
+    Main HTML content is extracted using python-readability (readability-lxml)
+    HTML tags are removed using BeautifulSoup.
+    """
+    doc = Document(html)
+    soup = BeautifulSoup(doc.content())
+    plaintext = ''.join(soup.findAll(text=True))
+    # the original soup comes with too many '\n', this messes up
+    # word frequency calculation
+    return plaintext.replace("\\n", "")
 
 
 def get_word_freq(word_list, normalize=True):

@@ -20,24 +20,24 @@
 </form>
 {% endblock content %}
 
-{% block javascript %}
+ {% block javascript %}
 <script type="text/javascript">
-  $('form').on('submit',function(){
-   console.log('caught submit');
-
-   $.ajax({
-      url: '{% url 'nube:dummy' %}',
-      data: {
-        'username': 'caca'
-      },
-      dataType: 'json',
-      success: function (data) {
-          alert(data.img_filename);
-        }
-      });
-
-   //prevents submit
-   return false;
-  });
+  // $('form').on('submit',function(){
+  //  console.log('caught submit');
+  //
+  //  $.ajax({
+  //     url: '{% url 'nube:dummy' %}',
+  //     data: {
+  //       'username': 'caca'
+  //     },
+  //     dataType: 'json',
+  //     success: function (data) {
+  //         alert(data.img_filename);
+  //       }
+  //     });
+  //
+  //  //prevents submit
+  //  return false;
+  // });
 </script>
-{% endblock javascript %}
+{% endblock javascript %} #}

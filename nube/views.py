@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponse
-from django.http import JsonResponse # for AJAX
+from django.http import JsonResponse  # for AJAX
 from django.conf import settings
 
 from .word_cloud import WordCloud
@@ -17,19 +17,20 @@ import uuid
 
 from .constants import *
 
-#class IndexView(generic.FormView):
-    #template_name = 'nube/index.html'
+
+# class IndexView(generic.FormView):
+# template_name = 'nube/index.html'
 
 def index(request):
     # todo: turn this into a generic view?
     return render(request, 'nube/index.html')
+
 
 def create(request):
     """
     Displays the generated WordCloud from the
     given URI or uploaded file
     """
-    response = HttpResponse(content_type="image/png")
     # in order to avoid KeyError
     myfile = request.FILES.get('myfile', None)
 
@@ -42,7 +43,7 @@ def create(request):
             cloud = WordCloud(myfile, type="upload")
         else:
             cloud = WordCloud(request.POST['uri'], type="internet")
-    except (MissingSchema):
+    except MissingSchema:
         # todo: this might need a redirect instead
         return render(request, 'nube/index.html', {
             'error_message': URI_COULD_NOT_BE_PROCESSED
@@ -56,9 +57,11 @@ def create(request):
             'img_filename': filename,
         })
 
+
 class ImageDetailView(generic.DetailView):
     model = CloudImage
     template_name = 'nube/detail.html'
+
 
 # used for displaying a list of user images
 class GalleryView(generic.ListView):
@@ -70,11 +73,13 @@ class GalleryView(generic.ListView):
     def get_queryset(self):
         return CloudImage.objects.filter()
 
+
 def dummy_image(request):
-    data ={
-        'img_filename' : 'colin.png'
+    data = {
+        'img_filename': 'colin.png'
     }
     return JsonResponse(data)
+
 
 def get_random_filename(ext):
     """
