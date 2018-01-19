@@ -4,10 +4,12 @@
 }
 
 /* word cloud image */
+/* vertical horizontal */
 .wc-img {
-  padding: 1em 1em;
+  padding: 1em .5em;
 }
 
 .img-save {
   text-align: center;
+  margin: 1em auto;
 }

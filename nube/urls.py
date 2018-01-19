@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 
 from . import views
 
@@ -12,5 +13,6 @@ urlpatterns = [
          'template_name': 'nube/logout.html'}, name='logout'),
     path('create', views.create, name='create'),
     path('img/<int:pk>/', views.ImageDetailView.as_view(), name='detail'),
-    path('all', views.GalleryView.as_view(), name='gallery'),
+    path('all', login_required(views.GalleryView.as_view()), name='gallery'),
+    path('save', views.save_img, name='save'),
 ]

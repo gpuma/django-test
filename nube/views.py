@@ -5,6 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse  # for AJAX
 from django.conf import settings
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from requests.exceptions import MissingSchema
 
@@ -53,9 +55,15 @@ def create(request):
         })
 
 
-class ImageDetailView(generic.DetailView):
-    model = CloudImage
-    template_name = 'nube/detail.html'
+@login_required
+def save_img(request):
+    # todo: needs some try catch
+    img = CloudImage(image=request.POST['img_filename'],
+                     creation_date=timezone.now(),
+                     name=request.POST['img_name'],
+                     user_id=request.user.id)
+    img.save()
+    return HttpResponseRedirect(reverse('nube:gallery'))
 
 
 # used for displaying a list of user images
@@ -63,7 +71,10 @@ class GalleryView(generic.ListView):
     template_name = 'nube/gallery.html'
     context_object_name = 'images'
 
-    # todo: it returns all objects, should return only
-    # user's images
     def get_queryset(self):
-        return CloudImage.objects.filter()
+        return CloudImage.objects.filter(user_id=self.request.user.id)
+
+
+class ImageDetailView(generic.DetailView):
+    model = CloudImage
+    template_name = 'nube/detail.html'

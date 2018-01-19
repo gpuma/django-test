@@ -138,4 +138,5 @@ CELERY_ENABLE_UTC = True
 # end of Celery config
 
 # AUTH
+LOGIN_URL = 'nube:login'
 LOGIN_REDIRECT_URL = 'nube:index'

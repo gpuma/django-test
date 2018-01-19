@@ -3,7 +3,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    {# todo: update this  #}
     <title>{{title|default:"Phuyu"}}</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -16,10 +15,14 @@
     <link rel="shortcut icon" href="{% static 'nube/favicon.ico' %}">
   </head>
   <body>
+
     <!--adds padding-->
     <div class="container">
     <div class="jumbotron">
-
+    {% if user.is_authenticated == True %}
+    <h3>Welcome back, {{user.username}}!</h3>
+    <a href="{% url 'nube:logout' %}" class="btn btn-lg btn-danger">Log out</a>
+    {% endif %}
     {% block content %}{% endblock content %}
     </div>
     <footer>

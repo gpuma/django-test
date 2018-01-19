@@ -2,13 +2,9 @@
 
 {% load static %}
 {% block content %}
-{% if user.is_authenticated == True %}
-<h3>Welcome back, {{user.username}}!</h3>
-<a href="{% url 'nube:logout' %}" class="btn btn-lg btn-danger">Log out</a>
-{% endif %}
 <form action="{% url 'nube:create' %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
-  <h1>Welcome to Phuyu</h1>
+  <h2>Generate a Word Cloud:</h2>
   {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
   <!-- todo: maybe add some radiobutton to distinguish-->
   <div class="form-group">
@@ -22,10 +18,10 @@
   <!--must be outside form-group so it's not sticking to the form"-->
   <input type="submit" class="btn btn-success btn-lg" id="btn-create" value="Create Word Cloud"/>
   <img src="{% static 'nube/loading.svg' %}" height="50" id="spinner" style="display: none;"/>
-  <div class="async-result">
-
-  </div>
 </form>
+<div class="async-result">
+
+</div>
 {% endblock content %}
 
 {% block javascript %}
@@ -54,6 +50,7 @@
           var tmp_html = `
             {% with img_filename='PLACEHOLDER' %}
             {% include "nube/subdetail.html" %}
+            {% include "nube/save_img.html" %}
             {% endwith %}
           `;
           // since templates are generated server-side and we don't know
