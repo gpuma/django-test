@@ -1,5 +1,6 @@
 {% extends "nube/base.html" %}
 
+{% load static %}
 {% block content %}
 
 <form action="{% url 'nube:create' %}" method="post" enctype="multipart/form-data">
@@ -16,18 +17,27 @@
     <small id="fileHelp" class="form-text text-muted">...or you can select a file from your computer</small>
   </div>
   <!--must be outside form-group so it's not sticking to the form"-->
-  <input type="submit" class="btn btn-success btn-lg" value="Create Word Cloud"/>
-
+  <input type="submit" class="btn btn-success btn-lg" id="btn-create" value="Create Word Cloud"/>
+  <img src="{% static 'nube/loading.svg' %}" height="50" id="spinner" style="display: none;"/>
   <div class="async-result">
 
   </div>
 </form>
 {% endblock content %}
 
- {% block javascript %}
+{% block javascript %}
 <script type="text/javascript">
+  status = "ready"
+  btn = $('#btn-create')
   $('form').on('submit',function(){
-   console.log('caught submit');
+    // if it's already working on a request we don't allow anymore
+    // which means we support one request at a time per client
+    if(status != 'ready') { return false }
+    status = "Working..."
+    btn.attr('disabled', true)
+    btn.attr('value', status)
+    $('#spinner').show()
+    $('div.async-result').html('')
    $.ajax({
       url: '{% url 'nube:create' %}',
       type: 'POST',
@@ -36,7 +46,6 @@
         'csrfmiddlewaretoken': csrftoken ,
       },
       dataType: 'json',
-
       success: function (data) {
           // display the generated image at the end of the page
           var tmp_html = `
@@ -48,11 +57,15 @@
           // what will be the filename of the generated image, we use this hack
           // RegExp is used in order to replace ALL matches
           var html = tmp_html.replace(new RegExp('PLACEHOLDER', 'g'), data.img_filename)
-          $('div.async-result').append(html)
+          $('div.async-result').html(html)
+          status = "ready"
+          btn.attr('disabled', false)
+          btn.attr('value', 'Create Word Cloud')
+          $('#spinner').hide()
         }
       });
      //prevents submit
      return false;
   });
 </script>
-{% endblock javascript %} #}
+{% endblock javascript %}
