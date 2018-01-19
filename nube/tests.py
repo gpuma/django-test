@@ -28,8 +28,7 @@ class WordCloudTests(TestCase):
         self.assertGreater(len(cloud.words), 0)
 
     def test_word_cloud_from_url(self):
-        # todo: change this shit
-        test_url = 'https://pastebin.com/raw/y4BskUX2'
+        test_url = 'http://gpuma.github.io/'
         cloud = WordCloud(test_url, type="internet")
         # font is valid
         fnt = ImageFont.truetype(cloud.font_location, 10)

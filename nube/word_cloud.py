@@ -250,7 +250,7 @@ def extract_content_from_html(html):
     HTML tags are removed using BeautifulSoup.
     """
     doc = Document(html)
-    soup = BeautifulSoup(doc.content())
+    soup = BeautifulSoup(doc.content(), "lxml")
     plaintext = ''.join(soup.findAll(text=True))
     # the original soup comes with too many '\n', this messes up
     # word frequency calculation

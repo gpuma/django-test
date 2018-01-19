@@ -17,27 +17,42 @@
   </div>
   <!--must be outside form-group so it's not sticking to the form"-->
   <input type="submit" class="btn btn-success btn-lg" value="Create Word Cloud"/>
+
+  <div class="async-result">
+
+  </div>
 </form>
 {% endblock content %}
 
  {% block javascript %}
 <script type="text/javascript">
-  // $('form').on('submit',function(){
-  //  console.log('caught submit');
-  //
-  //  $.ajax({
-  //     url: '{% url 'nube:dummy' %}',
-  //     data: {
-  //       'username': 'caca'
-  //     },
-  //     dataType: 'json',
-  //     success: function (data) {
-  //         alert(data.img_filename);
-  //       }
-  //     });
-  //
-  //  //prevents submit
-  //  return false;
-  // });
+  $('form').on('submit',function(){
+   console.log('caught submit');
+   $.ajax({
+      url: '{% url 'nube:create' %}',
+      type: 'POST',
+      data: {
+        'uri': $('#uri').val(),
+        'csrfmiddlewaretoken': csrftoken ,
+      },
+      dataType: 'json',
+
+      success: function (data) {
+          // display the generated image at the end of the page
+          var tmp_html = `
+            {% with img_filename='PLACEHOLDER' %}
+            {% include "nube/subdetail.html" %}
+            {% endwith %}
+          `;
+          // since templates are generated server-side and we don't know
+          // what will be the filename of the generated image, we use this hack
+          // RegExp is used in order to replace ALL matches
+          var html = tmp_html.replace(new RegExp('PLACEHOLDER', 'g'), data.img_filename)
+          $('div.async-result').append(html)
+        }
+      });
+     //prevents submit
+     return false;
+  });
 </script>
 {% endblock javascript %} #}

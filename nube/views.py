@@ -17,6 +17,8 @@ import uuid
 
 from .constants import *
 
+# celery task test
+from nube.tasks import mul
 
 # class IndexView(generic.FormView):
 # template_name = 'nube/index.html'
@@ -53,7 +55,7 @@ def create(request):
         filename = get_random_filename('.png')
         local_path = os.path.join(settings.MEDIA_ROOT, filename)
         img.save(local_path)
-        return render(request, 'nube/cloud_image.html', {
+        return JsonResponse({
             'img_filename': filename,
         })
 
@@ -75,8 +77,10 @@ class GalleryView(generic.ListView):
 
 
 def dummy_image(request):
+    n=int(request.GET['number'])
+    res = mul.delay(n,n).get()
     data = {
-        'img_filename': 'colin.png'
+        'img_filename': res
     }
     return JsonResponse(data)
 
