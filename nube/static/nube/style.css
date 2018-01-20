@@ -13,3 +13,11 @@
   text-align: center;
   margin: 1em auto;
 }
+
+.navbar {
+  margin: 1em 0em;
+}
+
+.navbar-btn {
+  font-weight: bold;
+}

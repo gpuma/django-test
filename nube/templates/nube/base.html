@@ -15,14 +15,11 @@
     <link rel="shortcut icon" href="{% static 'nube/favicon.ico' %}">
   </head>
   <body>
-
     <!--adds padding-->
     <div class="container">
     <div class="jumbotron">
-    {% if user.is_authenticated == True %}
-    <h3>Welcome back, {{user.username}}!</h3>
-    <a href="{% url 'nube:logout' %}" class="btn btn-lg btn-danger">Log out</a>
-    {% endif %}
+    {% include "nube/menu.html" %}
+
     {% block content %}{% endblock content %}
     </div>
     <footer>

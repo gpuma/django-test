@@ -1,0 +1,33 @@
+{% load static %}
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <a class="navbar-brand" href="{% url 'nube:index' %}">
+    <img src="{% static 'nube/favicon.ico' %}" width="30" height="30" alt="">
+    Phuyu
+  </a>
+  <ul class="navbar-nav">
+    {% if user.is_authenticated == True %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'nube:gallery' %}">Your gallery</a>
+    </li>
+    {% endif %}
+  </ul>
+  <ul class="nav navbar-nav ml-auto">
+  {% if user.is_authenticated == True %}
+  {# logout button #}
+    <li class="nav-item">
+      <label class="navbar-text">Hi, {{user.username}}.</label>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'nube:logout' %}" class="nav-link navbar-btn">Log out</a>
+    </li>
+  {% else %}
+    <li class="nav-item">
+      <a href="{% url 'nube:login' %}" class="nav-link">Log in</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'nube:signup' %}" class="nav-link">Sign up</a>
+    </li>
+  {% endif %}
+  </ul>
+  {% block content %}{% endblock content %}
+</nav>
