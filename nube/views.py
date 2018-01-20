@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import generic
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -6,6 +6,7 @@ from django.http import JsonResponse  # for AJAX
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
 from requests.exceptions import MissingSchema
@@ -21,6 +22,30 @@ import os
 
 def index(request):
     return render(request, 'nube/index.html')
+
+
+def signup(request):
+    """
+    Registers a new user and redirects them to
+    the index page, already authenticated.
+    """
+    if request.method == 'GET':
+        form = UserCreationForm()
+        return render(request, 'nube/signup.html', {'form': form})
+    # POST
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        form.save()
+        username = form.cleaned_data.get('username')
+        # to authenticate we need the raw password
+        # user.password stores the hash, which is no good
+        raw_password = form.cleaned_data.get('password1')
+        user = authenticate(username=username,
+                            password=raw_password)
+        login(request, user)
+        return redirect('nube:index')
+    else:
+        return render(request, 'nube/signup.html', {'form': form})
 
 
 def create(request):
@@ -47,7 +72,6 @@ def create(request):
         # main operation
         filename = create_word_cloud_task.delay(content, type, settings.MEDIA_ROOT).get(timeout=60)
     except MissingSchema:
-        # todo: this might need a redirect instead
         return render(request, 'nube/index.html', {
             'error_message': URI_COULD_NOT_BE_PROCESSED
         })
@@ -74,7 +98,7 @@ def save_img(request):
                      name=request.POST['img_name'],
                      user_id=request.user.id)
     img.save()
-    return HttpResponseRedirect(reverse('nube:gallery'))
+    return redirect('nube:gallery')
 
 
 def rename_img(old_filename, new_filename):

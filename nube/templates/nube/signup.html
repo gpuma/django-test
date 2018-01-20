@@ -1,11 +1,11 @@
 {% extends "nube/base.html" %}
 {% block content %}
-<h2>Log in</h2>
+<h2>Sign up</h2>
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
     {{ form.as_p }}
     </div>
-    <button type="submit" class="btn btn-success btn-lg">Log in</button>
+    <button type="submit" class="btn btn-success btn-lg">Sign up</button>
 </form>
 {% endblock content %}

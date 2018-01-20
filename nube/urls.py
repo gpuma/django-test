@@ -15,4 +15,5 @@ urlpatterns = [
     path('img/<int:pk>/', views.ImageDetailView.as_view(), name='detail'),
     path('all', login_required(views.GalleryView.as_view()), name='gallery'),
     path('save', views.save_img, name='save'),
+    path('signup', views.signup, name='signup'),
 ]
