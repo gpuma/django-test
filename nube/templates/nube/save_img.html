@@ -1,6 +1,6 @@
 {# An authenticaed user can save the word cloud to their account #}
 {% if user.is_authenticated == True %}
-<form action="{%url 'nube:save' %}" method="POST">
+<form action="{% url 'nube:save' %}" method="POST">
   <div class="form-group">
     {% csrf_token %}
     <input type="text" name="img_name" class="form-control" placeholder="A name for your word cloud..." />

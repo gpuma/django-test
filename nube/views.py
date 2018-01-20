@@ -16,6 +16,8 @@ from .constants import *
 # celery task test
 from nube.tasks import create_word_cloud_task
 
+import os
+
 
 def index(request):
     return render(request, 'nube/index.html')
@@ -57,13 +59,31 @@ def create(request):
 
 @login_required
 def save_img(request):
+    """
+    Adds the generated image to the user's collection.
+    """
+    # We remove the temp prefix from the filename
+    # to indicate that this is a permanent image now
+    old_filename = request.POST['img_filename']
+    new_filename = old_filename.replace(TMP_PREFIX, "")
+    rename_img(old_filename, new_filename)
+
     # todo: needs some try catch
-    img = CloudImage(image=request.POST['img_filename'],
+    img = CloudImage(image=new_filename,
                      creation_date=timezone.now(),
                      name=request.POST['img_name'],
                      user_id=request.user.id)
     img.save()
     return HttpResponseRedirect(reverse('nube:gallery'))
+
+
+def rename_img(old_filename, new_filename):
+    """
+    Renames the specified image that's located in
+    settings.MEDIA_ROOT
+    """
+    os.rename(os.path.join(settings.MEDIA_ROOT, old_filename),
+              os.path.join(settings.MEDIA_ROOT, new_filename))
 
 
 # used for displaying a list of user images

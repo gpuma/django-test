@@ -13,6 +13,7 @@ import requests
 # to generate a random filename
 import uuid
 import os
+from .constants import *
 # for article view
 from readability import Document
 from bs4 import BeautifulSoup
@@ -129,7 +130,7 @@ class WordCloud:
         Saves the Word Cloud as PNG image with a randomly generated
         filename, at the specified folder. It returns the filename only
         """
-        filename = get_random_filename('.png')
+        filename = get_random_filename('.png', prefix=TMP_PREFIX)
         local_path = os.path.join(folder, filename)
         self.img.save(local_path)
         return filename
@@ -289,10 +290,11 @@ def get_word_freq(word_list, normalize=True):
     return word_freq
 
 
-def get_random_filename(ext):
+def get_random_filename(ext, prefix=""):
     """
     Returns a randomly generated string with the specified
     extension `ext` appended at the end. `ext` should have a dot.
+    A str `prefix` can also be prefixed to the filename.
     """
     # hex returns a string with no dashes
-    return str(uuid.uuid4().hex) + ext
+    return prefix + str(uuid.uuid4().hex) + ext
