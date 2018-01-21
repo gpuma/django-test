@@ -1,12 +1,16 @@
 {% extends "nube/base.html" %}
 
 {% block content %}
-<h1>Generated Word Clouds</h1>
+{% if images.count == 0 %}
+ You have no word clouds, why not create some?
+{% else %}
 <ul>
+<h4>Generated Word Clouds</h4>
 {% for cloud_img in images %}
-  <li><a href="img/{{ cloud_img.id }}">{{cloud_img.name}}</a>
-    {# <img src="{{MEDIA_URL}}{{ cloud_img.image }}" class ="img-thumbnail"> #}
+  <li>
+    <a href="img/{{ cloud_img.id }}">{{cloud_img.name}}</a>
   </li>
 {% endfor %}
 </ul>
+{% endif %}
 {% endblock content %}

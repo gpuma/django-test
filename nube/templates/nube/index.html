@@ -8,15 +8,17 @@
   <!-- todo: maybe add some radiobutton to distinguish-->
   <div class="form-group">
     <label for="uri">Generate a Word Cloud:</label>
-    <input type="text" class="form-control" autofocus id="uri" name="uri" placeholder="Enter the URL of a plaintext file...">
+    <input type="text" class="form-control" autofocus id="uri" name="uri" placeholder="Enter a URL">
   </div>
-  <div class="form-group">
+
+  <!-- file upload temporarily disabled -->
+  <!-- <div class="form-group">
     <input type="file" class="form-control-file" name="myfile"
     aria-describedby="fileHelp">
     <small id="fileHelp" class="form-text text-muted">...or you can select a file from your computer</small>
-  </div>
+  </div> -->
   <!--must be outside form-group so it's not sticking to the form"-->
-  <input type="submit" class="btn btn-success btn-lg" id="btn-create" value="Create Word Cloud"/>
+  <input type="submit" class="btn btn-success" id="btn-create" value="Create Word Cloud"/>
   <img src="{% static 'nube/loading.svg' %}" height="50" id="spinner" style="display: none;"/>
 </form>
 <div class="async-result">
