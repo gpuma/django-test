@@ -6,10 +6,10 @@ Phuyu uses its own greedy algorithm for cloud generation, based on word frequenc
 A word cloud is a visualization of the words on a text. The most frequent words are emphasized. Word clouds
 can be used for NLP purposes, data analysis or just for fun :). Here's an example output from Phuyu:
 
-![alt text](example.png)
+![Word cloud example](example.png)
 
 ## Demo
-`coming soon`
+[Video demo](https://youtu.be/WuQ3Eg9MLB8)
 
 ## Main Technologies
 - Django 2.0 is used as the framework
