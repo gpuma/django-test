@@ -1,0 +1,7 @@
+# Ignore everything in this directory
+*
+# Except this file
+# We do this so the repo already has the empty media folder, which is required
+# by Phuyu, but the images inside will obviously not be commited to source control, 
+# since they're generated
+!.gitignore
