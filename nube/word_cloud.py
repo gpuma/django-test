@@ -58,8 +58,8 @@ class WordCloud:
     def get_center_position(self, word):
         """given a word of type Word, it returns the x, y coordinates at which it
         should be drawn on the current canvas, in order to appear in the center."""
-        # todo: it's not actually the center, it's a bit off
-        return self.canv_x / 2 - (word.length * word.font_size) / 2, self.canv_y / 2 - word.font_size / 2
+        # 0.3 is a magic number that gives a good approximation to the center
+        return self.canv_x / 2 - (word.length * word.font_size * 0.3), self.canv_y / 2 - word.font_size / 2
 
     def draw_word(self, word):
         """draws a specific Word onto the canvas"""
