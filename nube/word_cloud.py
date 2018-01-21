@@ -25,10 +25,7 @@ class WordCloud:
         self.max_font_size = max_font_size
         self.bg_color = background
         self.fg_color = foreground
-        # for linux
-        # self.fnt_location = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
-        # for windows
-        self.font_location = "C:/fonts/DejaVuSerif.ttf"
+        self.font_location = FONT_LOCATION
 
         # two types for now: local file and internet filename
         word_freq = get_word_freq(get_words(file_ref, type))
